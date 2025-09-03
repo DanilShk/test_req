@@ -1,0 +1,70 @@
+{
+	"info": {
+		"_postman_id": "169b6fdb-c230-48ed-aa86-6040094c42cf",
+		"name": "test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "46055737"
+	},
+	"item": [
+		{
+			"name": "healthcheck",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/healthcheck",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"healthcheck"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"text\":\"{{$randomLoremText}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/requests",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"requests"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "find many",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/requests",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"requests"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
