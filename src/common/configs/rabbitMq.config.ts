@@ -11,6 +11,7 @@ export const transporter: [RmqOptions, NestHybridApplicationOptions] = [
         durable: true,
       },
       persistent: true,
+      noAck: false,
     },
   },
   { inheritAppConfig: true },
