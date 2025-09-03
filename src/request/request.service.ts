@@ -3,14 +3,15 @@ import {
   Inject,
   Injectable,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
-import { ClientProxy, RpcException } from '@nestjs/microservices';
+import { ClientProxy } from '@nestjs/microservices';
 import { Request, Status } from '@prisma/client';
 import { PrismaService } from 'infrastructure/prisma/prisma.service';
 import { REQUEST_SERVISE } from 'src/common/constants/token.const';
-import { nextStatus } from './common/next-status';
-import { ChangeStatusEvent, CreateRequestDto } from './dto/request.dto';
 import delay from 'src/common/helpers/delay';
+import { nextStatus } from './common/next-status';
+import { ChangeStatusEventDto, CreateRequestDto } from './dto/request.dto';
 
 @Injectable()
 export class RequestService {
@@ -29,9 +30,7 @@ export class RequestService {
       throw new BadRequestException('the request not created');
     }
 
-    this.client.emit('change_status', {
-      id: request.id,
-    });
+    this.client.emit('change_status', new ChangeStatusEventDto(request.id));
 
     return request;
   }
@@ -40,7 +39,7 @@ export class RequestService {
     return this.prisma.request.findMany();
   }
 
-  async changeStatusEvent(data: ChangeStatusEvent) {
+  async changeStatusEvent(data: ChangeStatusEventDto) {
     this.logger.log('changeStatusEvent started', data);
 
     await delay(5000);
@@ -52,7 +51,7 @@ export class RequestService {
     });
 
     if (!request) {
-      throw new RpcException('request not found');
+      throw new NotFoundException('request not found');
     }
 
     const next = nextStatus[request.status];

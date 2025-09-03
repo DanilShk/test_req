@@ -14,7 +14,7 @@ async function bootstrap() {
     cors: true,
   });
 
-  app.connectMicroservice<MicroserviceOptions>(transporter);
+  app.connectMicroservice<MicroserviceOptions>(...transporter);
 
   app.use(helmet());
 

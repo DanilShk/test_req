@@ -5,7 +5,11 @@ export class CreateRequestDto {
   text: string;
 }
 
-export class ChangeStatusEvent {
+export class ChangeStatusEventDto {
+  constructor(id: string) {
+    this.id = id;
+  }
+
   @IsUUID()
   id: string;
 }
