@@ -3,7 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module';
 import helmet from 'helmet';
-import { ValidationPipe } from '@nestjs/common';
+import { InternalServerErrorException, ValidationPipe } from '@nestjs/common';
 import { validationConfig } from './common/configs/validation.config';
 import { MicroserviceOptions, RmqStatus } from '@nestjs/microservices';
 import { transporter } from './common/configs/rabbitMq.config';
@@ -19,7 +19,12 @@ async function bootstrap() {
   const server = app.connectMicroservice<MicroserviceOptions>(...transporter);
 
   server.status.subscribe((status: RmqStatus) => {
-    logger.log(`Status of rabbitMq server is ${status}`);
+    if (status === RmqStatus.DISCONNECTED) {
+      void server.close();
+      throw new InternalServerErrorException('DISCONNECTED');
+    }
+
+    this.logger.log(`Status of rabbitMq server is ${status}`);
   });
 
   app.use(helmet());
@@ -36,4 +41,4 @@ async function bootstrap() {
     logger.log(`app is working on the port ${port} `),
   );
 }
-bootstrap();
+void bootstrap();

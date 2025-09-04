@@ -56,9 +56,7 @@ export class RabbitMqModule implements OnModuleInit {
 
       this.client.status.subscribe((status: RmqStatus) => {
         if (status === RmqStatus.DISCONNECTED) {
-          throw new InternalServerErrorException(
-            'Status of rabbitMq client is',
-          );
+          throw new InternalServerErrorException('DISCONNECTED');
         }
 
         this.logger.log(`Status of rabbitMq client is ${status}`);
