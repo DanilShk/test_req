@@ -1,6 +1,11 @@
 import { Global, Inject, Logger, Module, OnModuleInit } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ClientProxy, ClientsModule, Transport } from '@nestjs/microservices';
+import {
+  ClientProxy,
+  ClientsModule,
+  RmqStatus,
+  Transport,
+} from '@nestjs/microservices';
 import { REQUEST_SERVISE } from 'src/common/constants/token.const';
 
 @Global()
@@ -40,6 +45,9 @@ export class RabbitMqModule implements OnModuleInit {
     try {
       await this.client.connect();
       this.logger.log('RabbitMQ connection established');
+      this.client.status.subscribe((status: RmqStatus) => {
+        this.logger.log(`Status of rabbitMq client is ${status}`);
+      });
     } catch (error) {
       this.logger.error('Failed to connect to RabbitMQ:', error.message);
       throw error;

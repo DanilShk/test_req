@@ -5,7 +5,7 @@ import { AppModule } from './app.module';
 import helmet from 'helmet';
 import { ValidationPipe } from '@nestjs/common';
 import { validationConfig } from './common/configs/validation.config';
-import { MicroserviceOptions } from '@nestjs/microservices';
+import { MicroserviceOptions, RmqStatus } from '@nestjs/microservices';
 import { transporter } from './common/configs/rabbitMq.config';
 
 async function bootstrap() {
@@ -14,11 +14,16 @@ async function bootstrap() {
     cors: true,
   });
 
-  app.connectMicroservice<MicroserviceOptions>(...transporter);
+  app.useLogger(app.get(Logger));
+
+  const server = app.connectMicroservice<MicroserviceOptions>(...transporter);
+
+  server.status.subscribe((status: RmqStatus) => {
+    logger.log(`Status of rabbitMq server is ${status}`);
+  });
 
   app.use(helmet());
 
-  app.useLogger(app.get(Logger));
   app.useGlobalPipes(new ValidationPipe(validationConfig));
 
   const configService = app.get(ConfigService);
