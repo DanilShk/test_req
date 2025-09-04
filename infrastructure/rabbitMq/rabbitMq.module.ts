@@ -1,4 +1,11 @@
-import { Global, Inject, Logger, Module, OnModuleInit } from '@nestjs/common';
+import {
+  Global,
+  Inject,
+  InternalServerErrorException,
+  Logger,
+  Module,
+  OnModuleInit,
+} from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import {
   ClientProxy,
@@ -44,13 +51,21 @@ export class RabbitMqModule implements OnModuleInit {
   async onModuleInit() {
     try {
       await this.client.connect();
+
       this.logger.log('RabbitMQ connection established');
+
       this.client.status.subscribe((status: RmqStatus) => {
+        if (status === RmqStatus.DISCONNECTED) {
+          throw new InternalServerErrorException(
+            'Status of rabbitMq client is',
+          );
+        }
+
         this.logger.log(`Status of rabbitMq client is ${status}`);
       });
     } catch (error) {
       this.logger.error('Failed to connect to RabbitMQ:', error.message);
-      throw error;
+      this.client.close();
     }
   }
 }
